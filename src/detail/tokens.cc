@@ -103,6 +103,10 @@ ProblemToken::ProblemToken(const ConfigOriginPtr& origin, const std::string& wha
     suggestQuotes_(suggestQuotes) {
 }
 
+std::string ProblemToken::what() {
+    return what_;
+}
+
 std::string ProblemToken::message() {
     return message_;
 }
@@ -112,7 +116,7 @@ bool ProblemToken::suggestQuotes() {
 }
 
 std::string ProblemToken::toString() {
-    return "'" + what_ + "'";
+    return "'" + what_ + "' (" + message_ + ")";
 }
 
 bool ProblemToken::canEqual(const ConfigVariant& other) {
@@ -222,6 +226,15 @@ bool Tokens::isNewline(const TokenPtr& token) {
 
 bool Tokens::isProblem(const TokenPtr& token) {
     return instanceof<ProblemToken>(token);
+}
+
+std::string Tokens::getProblemWhat(const TokenPtr& token) {
+    if (instanceof<ProblemToken>(token)) {
+        return std::static_pointer_cast<ProblemToken>(token)->what();
+    }
+    else {
+        throw ConfigExceptionBugOrBroken("tried to get problem what from " + token->toString());
+    }
 }
 
 std::string Tokens::getProblemMessage(const TokenPtr& token) {

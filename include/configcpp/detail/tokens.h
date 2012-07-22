@@ -19,6 +19,7 @@ public:
     static bool isValueWithType(const TokenPtr& t, ConfigValueType valueType);
     static bool isNewline(const TokenPtr& token);
     static bool isProblem(const TokenPtr& token);
+    static std::string getProblemWhat(const TokenPtr& token);
     static std::string getProblemMessage(const TokenPtr& token);
     static bool getProblemSuggestQuotes(const TokenPtr& token);
     static bool isComment(const TokenPtr& token);
@@ -139,6 +140,7 @@ public:
                  const std::string& message,
                  bool suggestQuotes);
 
+    std::string what();
     std::string message();
     bool suggestQuotes();
 

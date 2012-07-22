@@ -221,10 +221,10 @@ TEST_F(TokenizerTest, tokenizeReservedChars) {
         auto problem = tokenized[1];
         EXPECT_TRUE(Tokens::isProblem(problem)) << "Reserved char is a problem:" << invalid;
         if (invalid == '+') {
-            EXPECT_EQ("'end of file'", problem->toString());
+            EXPECT_EQ("end of file", Tokens::getProblemWhat(problem));
         }
         else {
-            EXPECT_EQ("'" + std::string(1, invalid) + "'", problem->toString());
+            EXPECT_EQ(std::string(1, invalid), Tokens::getProblemWhat(problem));
         }
     }
 }
