@@ -3,13 +3,13 @@ Configcpp
 
 Welcome to configcpp version **0.4.0**.
 
-Configcpp is a C++ port of the excellent `configuration library by typesafehub <https://github.com/typesafehub/config`_  , a full-featured configuration file library.
+Configcpp is a C++ port of the excellent `configuration library by typesafehub <https://github.com/typesafehub/config>`_, a full-featured configuration file library.
 
 
 Rationale
 ----------------
 
-The motivation for writing this port was to learn more about the new C++11 standard, as well as trying out some things that could be useful in my other Java port project, `Lucene++ <https://github.com/luceneplusplus/LucenePlusPlus`_.
+The motivation for writing this port was to learn more about the new C++11 standard, as well as trying out some things that could be useful in my other Java port project, `Lucene++ <https://github.com/luceneplusplus/LucenePlusPlus>`_.
 
 **Therefore configcpp will only compile with a C++11 compliant compiler - as of writing that is gcc 4.7.**
 
@@ -17,7 +17,7 @@ The motivation for writing this port was to learn more about the new C++11 stand
 Notes
 ----------------
 
-Full instructions and config file syntax documentation can be found on the `typesafehub/config <https://github.com/typesafehub/config`_.
+Full instructions and config file syntax documentation can be found on the `typesafehub/config <https://github.com/typesafehub/config>`_.
 
 Please note that for obvious reasons, Java properties files are not supported.
 
