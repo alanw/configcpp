@@ -1,7 +1,7 @@
 Configcpp
 ==========
 
-Welcome to configcpp version **0.4.0**.
+Welcome to configcpp version **0.5.0**.
 
 Configcpp is a C++ port of the excellent `configuration library by typesafehub <https://github.com/typesafehub/config>`_, a full-featured configuration file library.
 
