@@ -5,6 +5,7 @@
 
 #include "configcpp/detail/simple_config_object.h"
 #include "configcpp/detail/simple_config_origin.h"
+#include "configcpp/detail/simple_config.h"
 #include "configcpp/detail/resolve_status.h"
 #include "configcpp/detail/resolve_context.h"
 #include "configcpp/detail/path.h"
@@ -96,6 +97,46 @@ AbstractConfigObjectPtr SimpleConfigObject::withoutPath(const PathPtr& path) {
             }
         }
         return SimpleConfigObject::make_instance(origin(), smaller, ResolveStatusEnum::fromValues(smaller), ignoresFallbacks_);
+    }
+}
+
+ConfigObjectPtr SimpleConfigObject::withValue(const std::string& key, const ConfigValuePtr& v) {
+    if (!v) {
+        throw ConfigExceptionBugOrBroken("Trying to store null ConfigValue in a ConfigObject");
+    }
+
+    MapAbstractConfigValue newMap;
+    if (value.empty()) {
+        newMap = {{key, std::dynamic_pointer_cast<AbstractConfigValue>(v)}};
+    }
+    else {
+        newMap = MiscUtils::dynamic_map<MapAbstractConfigValue>(value);
+        newMap[key] = std::dynamic_pointer_cast<AbstractConfigValue>(v);
+    }
+
+    return SimpleConfigObject::make_instance(origin(), newMap, ResolveStatusEnum::fromValues(newMap), ignoresFallbacks_);
+}
+
+ConfigObjectPtr SimpleConfigObject::withValue(const PathPtr& path, const ConfigValuePtr& v) {
+    std::string key = path->first();
+    PathPtr next = path->remainder();
+
+    if (!next) {
+        return withValue(key, v);
+    }
+    else {
+        auto val = value.find(key);
+        auto child = val == value.end() ? nullptr : val->second;
+        if (child && instanceof<AbstractConfigObject>(child)) {
+            // if we have an object, add to it
+            return withValue(key, std::dynamic_pointer_cast<ConfigValue>(std::dynamic_pointer_cast<AbstractConfigObject>(child)->withValue(next, v)));
+        }
+        else {
+            // as soon as we have a non-object, replace it entirely
+            SimpleConfigPtr subtree = std::dynamic_pointer_cast<AbstractConfigValue>(v)->atPath(
+                SimpleConfigOrigin::newSimple("withValue(" + next->render() + ")"), next);
+            return withValue(key, subtree->root());
+        }
     }
 }
 

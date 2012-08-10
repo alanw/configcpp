@@ -105,6 +105,18 @@ public:
     /// @return a copy of the object minus the specified key
     virtual ConfigObjectPtr withoutKey(const std::string& key) = 0;
 
+    /// Returns a {@code ConfigObject} based on this one, but with the given key
+    /// set to the given value. Does not modify this instance (since it's
+    /// immutable). If the key already has a value, that value is replaced. To
+    /// remove a value, use withoutKey().
+    ///
+    /// @param key
+    ///            key to add
+    /// @param value
+    ///            value at the new key
+    /// @return the new instance with the new map entry
+    virtual ConfigObjectPtr withValue(const std::string& key, const ConfigValuePtr& value) = 0;
+
     /// Return set of key-value pairs.
     virtual SetConfigValue entrySet();
 

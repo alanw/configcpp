@@ -34,6 +34,9 @@ public:
     virtual AbstractConfigObjectPtr withOnlyPath(const PathPtr& path) override;
     virtual AbstractConfigObjectPtr withoutPath(const PathPtr& path) override;
 
+    virtual ConfigObjectPtr withValue(const std::string& key, const ConfigValuePtr& value) override;
+    virtual ConfigObjectPtr withValue(const PathPtr& path, const ConfigValuePtr& value) override;
+
     virtual AbstractConfigValuePtr attemptPeekWithPartialResolve(const std::string& key) override;
 
 private:

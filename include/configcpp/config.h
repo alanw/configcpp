@@ -570,6 +570,18 @@ public:
     /// @return a {@code Config} instance containing this config at the given
     ///         key.
     virtual ConfigPtr atKey(const std::string& key) = 0;
+
+    /// Returns a {@code Config} based on this one, but with the given path set
+    /// to the given value. Does not modify this instance (since it's immutable).
+    /// If the path already has a value, that value is replaced. To remove a
+    /// value, use withoutPath().
+    ///
+    /// @param path
+    ///            path to add
+    /// @param value
+    ///            value at the new path
+    /// @return the new instance with the new map entry
+    virtual ConfigPtr withValue(const std::string& path, const ConfigValuePtr& value) = 0;
 };
 
 }

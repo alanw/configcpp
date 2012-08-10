@@ -575,3 +575,62 @@ TEST_F(ConfigValueTest, atKeyWorks) {
     checkSame(std::dynamic_pointer_cast<ConfigBase>(config->getValue("a")), std::dynamic_pointer_cast<ConfigBase>(v));
     EXPECT_TRUE(boost::contains(config->origin()->description(), "atKey"));
 }
+
+TEST_F(ConfigValueTest, withValueDepth1FromEmpty) {
+    auto v = ConfigValue::fromAnyRef(42);
+    auto config = Config::emptyConfig()->withValue("a", v);
+    checkEquals(std::dynamic_pointer_cast<ConfigBase>(parseConfig("a=42")), std::dynamic_pointer_cast<ConfigBase>(config));
+    checkSame(std::dynamic_pointer_cast<ConfigBase>(config->getValue("a")), std::dynamic_pointer_cast<ConfigBase>(v));
+}
+
+TEST_F(ConfigValueTest, withValueDepth2FromEmpty) {
+    auto v = ConfigValue::fromAnyRef(42);
+    auto config = Config::emptyConfig()->withValue("a.b", v);
+    checkEquals(std::dynamic_pointer_cast<ConfigBase>(parseConfig("a.b=42")), std::dynamic_pointer_cast<ConfigBase>(config));
+    checkSame(std::dynamic_pointer_cast<ConfigBase>(config->getValue("a.b")), std::dynamic_pointer_cast<ConfigBase>(v));
+}
+
+TEST_F(ConfigValueTest, withValueDepth3FromEmpty) {
+    auto v = ConfigValue::fromAnyRef(42);
+    auto config = Config::emptyConfig()->withValue("a.b.c", v);
+    checkEquals(std::dynamic_pointer_cast<ConfigBase>(parseConfig("a.b.c=42")), std::dynamic_pointer_cast<ConfigBase>(config));
+    checkSame(std::dynamic_pointer_cast<ConfigBase>(config->getValue("a.b.c")), std::dynamic_pointer_cast<ConfigBase>(v));
+}
+
+TEST_F(ConfigValueTest, withValueDepth1OverwritesExisting) {
+    auto v = ConfigValue::fromAnyRef(47);
+    auto old = v->atPath("a");
+    auto config = old->withValue("a", ConfigValue::fromAnyRef(42));
+    checkEquals(std::dynamic_pointer_cast<ConfigBase>(parseConfig("a=42")), std::dynamic_pointer_cast<ConfigBase>(config));
+    EXPECT_EQ(42, config->getInt("a"));
+}
+
+TEST_F(ConfigValueTest, withValueDepth2OverwritesExisting) {
+    auto v = ConfigValue::fromAnyRef(47);
+    auto old = v->atPath("a.b");
+    auto config = old->withValue("a.b", ConfigValue::fromAnyRef(42));
+    checkEquals(std::dynamic_pointer_cast<ConfigBase>(parseConfig("a.b=42")), std::dynamic_pointer_cast<ConfigBase>(config));
+    EXPECT_EQ(42, config->getInt("a.b"));
+}
+
+TEST_F(ConfigValueTest, withValueInsideExistingObject) {
+    auto v = ConfigValue::fromAnyRef(47);
+    auto old = v->atPath("a.c");
+    auto config = old->withValue("a.b", ConfigValue::fromAnyRef(42));
+    checkEquals(std::dynamic_pointer_cast<ConfigBase>(parseConfig("a.b=42,a.c=47")), std::dynamic_pointer_cast<ConfigBase>(config));
+    EXPECT_EQ(42, config->getInt("a.b"));
+    EXPECT_EQ(47, config->getInt("a.c"));
+}
+
+TEST_F(ConfigValueTest, withValueBuildComplexConfig) {
+    auto v1 = ConfigValue::fromAnyRef(1);
+    auto v2 = ConfigValue::fromAnyRef(2);
+    auto v3 = ConfigValue::fromAnyRef(3);
+    auto v4 = ConfigValue::fromAnyRef(4);
+    auto config = Config::emptyConfig()
+        ->withValue("a", v1)
+        ->withValue("b.c", v2)
+        ->withValue("b.d", v3)
+        ->withValue("x.y.z", v4);
+    checkEquals(std::dynamic_pointer_cast<ConfigBase>(parseConfig("a=1,b.c=2,b.d=3,x.y.z=4")), std::dynamic_pointer_cast<ConfigBase>(config));
+}

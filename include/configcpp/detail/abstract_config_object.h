@@ -26,9 +26,13 @@ public:
     virtual ConfigObjectPtr withOnlyKey(const std::string& key) = 0;
     virtual ConfigObjectPtr withoutKey(const std::string& key) = 0;
 
+    virtual ConfigObjectPtr withValue(const std::string& key, const ConfigValuePtr& value) = 0;
+
     virtual AbstractConfigObjectPtr withOnlyPathOrNull(const PathPtr& path) = 0;
     virtual AbstractConfigObjectPtr withOnlyPath(const PathPtr& path) = 0;
     virtual AbstractConfigObjectPtr withoutPath(const PathPtr& path) = 0;
+
+    virtual ConfigObjectPtr withValue(const PathPtr& path, const ConfigValuePtr& value) = 0;
 
     /// This looks up the key with no transformation or type conversion of any
     /// kind, and returns null if the key is not present. The object must be

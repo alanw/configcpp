@@ -111,6 +111,14 @@ AbstractConfigObjectPtr ConfigDelayedMergeObject::withoutPath(const PathPtr& pat
     throw notResolved();
 }
 
+ConfigObjectPtr ConfigDelayedMergeObject::withValue(const std::string& key, const ConfigValuePtr& value) {
+    throw notResolved();
+}
+
+ConfigObjectPtr ConfigDelayedMergeObject::withValue(const PathPtr& path, const ConfigValuePtr& value) {
+    throw notResolved();
+}
+
 VectorAbstractConfigValue ConfigDelayedMergeObject::unmergedValues() {
     return stack;
 }
