@@ -109,9 +109,6 @@ TEST_F(ConfigParserTest, pathParsing) {
     checkEquals(path({"a", "", "b"}), parsePath("a.\"\".b"));
     checkEquals(path({"a", ""}), parsePath("a.\"\""));
     checkEquals(path({"", "b"}), parsePath("\"\".b"));
-    checkEquals(path({""}), parsePath("\"\"\"\""));
-    checkEquals(path({"a", ""}), parsePath("a.\"\"\"\""));
-    checkEquals(path({"", "b"}), parsePath("\"\"\"\".b"));
     checkEquals(path({"", "", ""}), parsePath(" \"\".\"\".\"\" "));
     checkEquals(path({"a-c"}), parsePath("a-c"));
     checkEquals(path({"a_c"}), parsePath("a_c"));

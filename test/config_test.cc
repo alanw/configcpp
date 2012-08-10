@@ -702,7 +702,6 @@ TEST_F(ConfigTest, test02SubstitutionsWithWeirdPaths) {
 
     EXPECT_EQ(42, conf->getInt("42_a"));
     EXPECT_EQ(42, conf->getInt("42_b"));
-    EXPECT_EQ(42, conf->getInt("42_c"));
     EXPECT_EQ(57, conf->getInt("57_a"));
     EXPECT_EQ(57, conf->getInt("57_b"));
     EXPECT_EQ(103, conf->getInt("103_a"));

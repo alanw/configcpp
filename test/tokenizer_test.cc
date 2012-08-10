@@ -39,12 +39,12 @@ TEST_F(TokenizerTest, tokenizeAllTypesNoSpaces) {
         Tokens::START(), Tokens::COMMA(), Tokens::COLON(), Tokens::EQUALS(),
         Tokens::CLOSE_CURLY(), Tokens::OPEN_CURLY(), Tokens::CLOSE_SQUARE(),
         Tokens::OPEN_SQUARE(), Tokens::PLUS_EQUALS(), tokenString("foo"),
-        tokenTrue(), tokenDouble(3.14), tokenFalse(), tokenInt64(42),
-        tokenNull(), tokenSubstitution(VectorToken({tokenUnquoted("a.b")})),
+        tokenString("bar"), tokenTrue(), tokenDouble(3.14), tokenFalse(),
+        tokenInt64(42), tokenNull(), tokenSubstitution(VectorToken({tokenUnquoted("a.b")})),
         tokenOptionalSubstitution(VectorToken({tokenUnquoted("x.y")})),
-        tokenKeySubstitution("c.d"), tokenLine(1), Tokens::END()}
-    );
-    EXPECT_TRUE(MiscUtils::vector_equals(expected, tokenizeAsList(",:=}{][+=\"foo\"true3.14false42null${a.b}${?x.y}${\"c.d\"}\n")));
+        tokenKeySubstitution("c.d"), tokenLine(1), Tokens::END()
+    });
+    EXPECT_TRUE(MiscUtils::vector_equals(expected, tokenizeAsList(",:=}{][+=\"foo\"\"\"\"bar\"\"\"true3.14false42null${a.b}${?x.y}${\"c.d\"}\n")));
 }
 
 TEST_F(TokenizerTest, tokenizeAllTypesWithSingleSpaces) {
@@ -52,15 +52,14 @@ TEST_F(TokenizerTest, tokenizeAllTypesWithSingleSpaces) {
         Tokens::START(), Tokens::COMMA(), Tokens::COLON(), Tokens::EQUALS(),
         Tokens::CLOSE_CURLY(), Tokens::OPEN_CURLY(), Tokens::CLOSE_SQUARE(),
         Tokens::OPEN_SQUARE(), Tokens::PLUS_EQUALS(), tokenString("foo"),
-        tokenUnquoted(" "), tokenInt64(42), tokenUnquoted(" "), tokenTrue(),
-        tokenUnquoted(" "), tokenDouble(3.14), tokenUnquoted(" "), tokenFalse(),
-        tokenUnquoted(" "), tokenNull(), tokenUnquoted(" "),
-        tokenSubstitution(VectorToken({tokenUnquoted("a.b")})),
-        tokenUnquoted(" "),
-        tokenOptionalSubstitution(VectorToken({tokenUnquoted("x.y")})),
+        tokenUnquoted(" "), tokenString("bar"), tokenUnquoted(" "),
+        tokenInt64(42), tokenUnquoted(" "), tokenTrue(), tokenUnquoted(" "),
+        tokenDouble(3.14), tokenUnquoted(" "), tokenFalse(), tokenUnquoted(" "),
+        tokenNull(), tokenUnquoted(" "), tokenSubstitution(VectorToken({tokenUnquoted("a.b")})),
+        tokenUnquoted(" "), tokenOptionalSubstitution(VectorToken({tokenUnquoted("x.y")})),
         tokenUnquoted(" "), tokenKeySubstitution("c.d"), tokenLine(1), Tokens::END()
     });
-    EXPECT_TRUE(MiscUtils::vector_equals(expected, tokenizeAsList(" , : = } { ] [ += \"foo\" 42 true 3.14 false null ${a.b} ${?x.y} ${\"c.d\"} \n ")));
+    EXPECT_TRUE(MiscUtils::vector_equals(expected, tokenizeAsList(" , : = } { ] [ += \"foo\" \"\"\"bar\"\"\" 42 true 3.14 false null ${a.b} ${?x.y} ${\"c.d\"} \n ")));
 }
 
 TEST_F(TokenizerTest, tokenizeAllTypesWithMultipleSpaces) {
@@ -68,15 +67,15 @@ TEST_F(TokenizerTest, tokenizeAllTypesWithMultipleSpaces) {
         Tokens::START(), Tokens::COMMA(), Tokens::COLON(), Tokens::EQUALS(),
         Tokens::CLOSE_CURLY(), Tokens::OPEN_CURLY(), Tokens::CLOSE_SQUARE(),
         Tokens::OPEN_SQUARE(), Tokens::PLUS_EQUALS(), tokenString("foo"),
-        tokenUnquoted("   "), tokenInt64(42), tokenUnquoted("   "), tokenTrue(),
-        tokenUnquoted("   "), tokenDouble(3.14), tokenUnquoted("   "), tokenFalse(),
+        tokenUnquoted("   "), tokenString("bar"), tokenUnquoted("   "),
+        tokenInt64(42), tokenUnquoted("   "), tokenTrue(), tokenUnquoted("   "),
+        tokenDouble(3.14), tokenUnquoted("   "), tokenFalse(),
         tokenUnquoted("   "), tokenNull(), tokenUnquoted("   "),
         tokenSubstitution(VectorToken({tokenUnquoted("a.b")})),
-        tokenUnquoted("   "),
-        tokenOptionalSubstitution(VectorToken({tokenUnquoted("x.y")})),
+        tokenUnquoted("   "), tokenOptionalSubstitution(VectorToken({tokenUnquoted("x.y")})),
         tokenUnquoted("   "), tokenKeySubstitution("c.d"), tokenLine(1), Tokens::END()
     });
-    EXPECT_TRUE(MiscUtils::vector_equals(expected, tokenizeAsList("   ,   :   =   }   {   ]   [   +=   \"foo\"   42   true   3.14   false   null   ${a.b}   ${?x.y}   ${\"c.d\"}  \n   ")));
+    EXPECT_TRUE(MiscUtils::vector_equals(expected, tokenizeAsList("   ,   :   =   }   {   ]   [   +=   \"foo\"   \"\"\"bar\"\"\"   42   true   3.14   false   null   ${a.b}   ${?x.y}   ${\"c.d\"}  \n   ")));
 }
 
 TEST_F(TokenizerTest, tokenizeTrueAndUnquotedText) {
@@ -183,6 +182,41 @@ TEST_F(TokenizerTest, tokenizerReturnsProblemOnInvalidStrings) {
     EXPECT_TRUE(std::find_if(enddollar.begin(), enddollar.end(), Tokens::isProblem) != enddollar.end());
     auto enddollarbrace = tokenizeAsList("${"); // file ends with a ${
     EXPECT_TRUE(std::find_if(enddollarbrace.begin(), enddollarbrace.end(), Tokens::isProblem) != enddollarbrace.end());
+}
+
+TEST_F(TokenizerTest, tokenizerEmptyTripleQuoted) {
+    VectorToken expected({
+        Tokens::START(), tokenString(""), Tokens::END()
+    });
+    EXPECT_TRUE(MiscUtils::vector_equals(expected, tokenizeAsList("\"\"\"\"\"\"")));
+}
+
+TEST_F(TokenizerTest, tokenizerTrivialTripleQuoted) {
+    VectorToken expected({
+        Tokens::START(), tokenString("bar"), Tokens::END()
+    });
+    EXPECT_TRUE(MiscUtils::vector_equals(expected, tokenizeAsList("\"\"\"bar\"\"\"")));
+}
+
+TEST_F(TokenizerTest, tokenizerNoEscapesInTripleQuoted) {
+    VectorToken expected({
+        Tokens::START(), tokenString("\\n"), Tokens::END()
+    });
+    EXPECT_TRUE(MiscUtils::vector_equals(expected, tokenizeAsList("\"\"\"\\n\"\"\"")));
+}
+
+TEST_F(TokenizerTest, tokenizerTrailingQuotesInTripleQuoted) {
+    VectorToken expected({
+        Tokens::START(), tokenString("\"\"\""), Tokens::END()
+    });
+    EXPECT_TRUE(MiscUtils::vector_equals(expected, tokenizeAsList("\"\"\"\"\"\"\"\"\"")));
+}
+
+TEST_F(TokenizerTest, tokenizerNewlineInTripleQuoted) {
+    VectorToken expected({
+        Tokens::START(), tokenString("foo\nbar"), Tokens::END()
+    });
+    EXPECT_TRUE(MiscUtils::vector_equals(expected, tokenizeAsList("\"\"\"foo\nbar\"\"\"")));
 }
 
 TEST_F(TokenizerTest, tokenizerParseNumbers) {

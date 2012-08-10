@@ -69,6 +69,17 @@ protected:
         return "original.json";
     }
 
+    VectorString equiv05_dir() {
+        static VectorString _equiv05_dir = {
+            "triple-quotes.conf"
+        };
+        return _equiv05_dir;
+    }
+
+    std::string equiv05_orig() {
+        return "original.json";
+    }
+
     AbstractConfigValuePtr postParse(const ConfigValuePtr& value) {
         if (instanceof<AbstractConfigObject>(value)) {
             // for purposes of these tests, substitutions are only
@@ -110,4 +121,5 @@ TEST_F(EquivalentsTest, testEquivalents) {
     testEquiv(resourcePath() + "/equiv02/", equiv02_orig(), equiv02_dir());
     testEquiv(resourcePath() + "/equiv03/", equiv03_orig(), equiv03_dir());
     testEquiv(resourcePath() + "/equiv04/", equiv04_orig(), equiv04_dir());
+    testEquiv(resourcePath() + "/equiv05/", equiv05_orig(), equiv05_dir());
 }

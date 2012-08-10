@@ -126,6 +126,8 @@ private:
 
     void pullEscapeSequence(std::string& s);
 
+    void appendTripleQuotedString(std::string& s);
+
     TokenPtr pullQuotedString();
 
     TokenPtr pullPlusEquals();

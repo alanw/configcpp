@@ -359,6 +359,33 @@ void TokenStream::pullEscapeSequence(std::string& s) {
     }
 }
 
+void TokenStream::appendTripleQuotedString(std::string& s) {
+    // we are after the opening triple quote and need to consume the
+    // close triple
+    uint32_t consecutiveQuotes = 0;
+    while (true) {
+        int32_t c = nextCharRaw();
+
+        if (c == '\"') {
+            consecutiveQuotes += 1;
+        }
+        else if (consecutiveQuotes >= 3) {
+            // the last three quotes end the string and the others are kept.
+            s.resize(s.length() - 3);
+            putBack(c);
+            break;
+        }
+        else {
+            consecutiveQuotes = 0;
+            if (c == -1) {
+                throw problem("End of input but triple-quoted string was still open");
+            }
+        }
+
+        s += static_cast<char>(c);
+    }
+}
+
 TokenPtr TokenStream::pullQuotedString() {
     // the open quote has already been consumed
     std::string s;
@@ -382,6 +409,18 @@ TokenPtr TokenStream::pullQuotedString() {
             s += static_cast<char>(c);
         }
     } while (c != '"');
+
+    // maybe switch to triple-quoted string, sort of hacky...
+    if (s.empty()) {
+        int32_t third = nextCharRaw();
+        if (third == '\"') {
+            appendTripleQuotedString(s);
+        }
+        else {
+            putBack(third);
+        }
+    }
+
     return Tokens::newString(lineOrigin_, s);
 }
 
