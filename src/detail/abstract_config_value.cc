@@ -12,6 +12,9 @@
 #include "configcpp/detail/mergeable_value.h"
 #include "configcpp/detail/unmergeable.h"
 #include "configcpp/detail/config_impl_util.h"
+#include "configcpp/detail/simple_config_object.h"
+#include "configcpp/detail/simple_config.h"
+#include "configcpp/detail/path.h"
 #include "configcpp/config_render_options.h"
 #include "configcpp/config_origin.h"
 
@@ -247,6 +250,31 @@ std::string AbstractConfigValue::render(const ConfigRenderOptionsPtr& options) {
 
 std::string AbstractConfigValue::transformToString() {
     return "";
+}
+
+SimpleConfigPtr AbstractConfigValue::atKey(const ConfigOriginPtr& origin, const std::string& key) {
+    MapAbstractConfigValue m({{key, shared_from_this()}});
+    return std::dynamic_pointer_cast<SimpleConfig>(SimpleConfigObject::make_instance(origin, m)->toConfig());
+}
+
+ConfigPtr AbstractConfigValue::atKey(const std::string& key) {
+    return atKey(SimpleConfigOrigin::newSimple("atKey(" + key + ")"), key);
+}
+
+SimpleConfigPtr AbstractConfigValue::atPath(const ConfigOriginPtr& origin, const PathPtr& path) {
+    PathPtr parent = path->parent();
+    SimpleConfigPtr result = atKey(origin, path->last());
+    while (parent) {
+        std::string key = parent->last();
+        result = result->atKey(origin, key);
+        parent = parent->parent();
+    }
+    return result;
+}
+
+ConfigPtr AbstractConfigValue::atPath(const std::string& path) {
+    SimpleConfigOriginPtr origin = SimpleConfigOrigin::newSimple("atPath(" + path + ")");
+    return atPath(origin, Path::newPath(path));
 }
 
 }

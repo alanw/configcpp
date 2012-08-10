@@ -156,6 +156,14 @@ public:
     /// other strings or by the DefaultTransformer.
     virtual std::string transformToString();
 
+    SimpleConfigPtr atKey(const ConfigOriginPtr& origin, const std::string& key);
+
+    virtual ConfigPtr atKey(const std::string& key) override;
+
+    SimpleConfigPtr atPath(const ConfigOriginPtr& origin, const PathPtr& path);
+
+    virtual ConfigPtr atPath(const std::string& path) override;
+
 private:
     SimpleConfigOriginPtr origin_;
 };

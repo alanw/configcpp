@@ -819,4 +819,16 @@ ConfigPtr SimpleConfig::withoutPath(const std::string& pathExpression) {
     return make_instance(std::dynamic_pointer_cast<AbstractConfigObject>(root())->withoutPath(path));
 }
 
+SimpleConfigPtr SimpleConfig::atKey(const ConfigOriginPtr& origin, const std::string& key) {
+    return std::dynamic_pointer_cast<AbstractConfigObject>(root())->atKey(origin, key);
+}
+
+ConfigPtr SimpleConfig::atKey(const std::string& key) {
+    return root()->atKey(key);
+}
+
+ConfigPtr SimpleConfig::atPath(const std::string& path) {
+    return root()->atPath(path);
+}
+
 }

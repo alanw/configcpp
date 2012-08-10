@@ -543,3 +543,35 @@ TEST_F(ConfigValueTest, withoutInvolvingUnresolved) {
     EXPECT_TRUE(ResolveStatus::UNRESOLVED == std::dynamic_pointer_cast<AbstractConfigValue>(obj->withoutKey("a"))->resolveStatus());
     EXPECT_TRUE(ResolveStatus::RESOLVED == std::dynamic_pointer_cast<AbstractConfigValue>(obj->withoutKey("a")->withoutKey("b"))->resolveStatus());
 }
+
+TEST_F(ConfigValueTest, atPathWorksOneElement) {
+    auto v = ConfigValue::fromAnyRef(42);
+    auto config = v->atPath("a");
+    checkEquals(std::dynamic_pointer_cast<ConfigBase>(parseConfig("a=42")), std::dynamic_pointer_cast<ConfigBase>(config));
+    checkSame(std::dynamic_pointer_cast<ConfigBase>(config->getValue("a")), std::dynamic_pointer_cast<ConfigBase>(v));
+    EXPECT_TRUE(boost::contains(config->origin()->description(), "atPath"));
+}
+
+TEST_F(ConfigValueTest, atPathWorksTwoElements) {
+    auto v = ConfigValue::fromAnyRef(42);
+    auto config = v->atPath("a.b");
+    checkEquals(std::dynamic_pointer_cast<ConfigBase>(parseConfig("a.b=42")), std::dynamic_pointer_cast<ConfigBase>(config));
+    checkSame(std::dynamic_pointer_cast<ConfigBase>(config->getValue("a.b")), std::dynamic_pointer_cast<ConfigBase>(v));
+    EXPECT_TRUE(boost::contains(config->origin()->description(), "atPath"));
+}
+
+TEST_F(ConfigValueTest, atPathWorksFourElements) {
+    auto v = ConfigValue::fromAnyRef(42);
+    auto config = v->atPath("a.b.c.d");
+    checkEquals(std::dynamic_pointer_cast<ConfigBase>(parseConfig("a.b.c.d=42")), std::dynamic_pointer_cast<ConfigBase>(config));
+    checkSame(std::dynamic_pointer_cast<ConfigBase>(config->getValue("a.b.c.d")), std::dynamic_pointer_cast<ConfigBase>(v));
+    EXPECT_TRUE(boost::contains(config->origin()->description(), "atPath"));
+}
+
+TEST_F(ConfigValueTest, atKeyWorks) {
+    auto v = ConfigValue::fromAnyRef(42);
+    auto config = v->atKey("a");
+    checkEquals(std::dynamic_pointer_cast<ConfigBase>(parseConfig("a=42")), std::dynamic_pointer_cast<ConfigBase>(config));
+    checkSame(std::dynamic_pointer_cast<ConfigBase>(config->getValue("a")), std::dynamic_pointer_cast<ConfigBase>(v));
+    EXPECT_TRUE(boost::contains(config->origin()->description(), "atKey"));
+}

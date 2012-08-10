@@ -180,6 +180,13 @@ private:
     virtual ConfigPtr withOnlyPath(const std::string& path) override;
     virtual ConfigPtr withoutPath(const std::string& path) override;
 
+public:
+    SimpleConfigPtr atKey(const ConfigOriginPtr& origin, const std::string& key);
+
+    virtual ConfigPtr atKey(const std::string& key) override;
+
+    virtual ConfigPtr atPath(const std::string& path) override;
+
 private:
     AbstractConfigObjectPtr object;
 };
