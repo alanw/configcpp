@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // Copyright (c) 2012 Alan Wright. All rights reserved.
-// Distributable under the terms of either the Apache License (Version 2.0)
+// Distributable under the terms of the Apache License (Version 2.0).
 /////////////////////////////////////////////////////////////////////////////
 
 #include "configcpp/detail/resolve_memos.h"
