@@ -818,14 +818,22 @@ TEST_F(ConfigTest, test10DelayedMergeRelativizing) {
 
 TEST_F(ConfigTest, renderRoundTrip) {
     auto optionsCombos = {
-        ConfigRenderOptions::defaults()->setFormatted(false)->setOriginComments(false)->setComments(false),
-        ConfigRenderOptions::defaults()->setFormatted(false)->setOriginComments(false)->setComments(true),
-        ConfigRenderOptions::defaults()->setFormatted(false)->setOriginComments(true)->setComments(false),
-        ConfigRenderOptions::defaults()->setFormatted(false)->setOriginComments(true)->setComments(true),
-        ConfigRenderOptions::defaults()->setFormatted(true)->setOriginComments(false)->setComments(false),
-        ConfigRenderOptions::defaults()->setFormatted(true)->setOriginComments(false)->setComments(true),
-        ConfigRenderOptions::defaults()->setFormatted(true)->setOriginComments(true)->setComments(false),
-        ConfigRenderOptions::defaults()->setFormatted(true)->setOriginComments(true)->setComments(true)
+        ConfigRenderOptions::defaults()->setFormatted(false)->setOriginComments(false)->setComments(false)->setJson(false),
+        ConfigRenderOptions::defaults()->setFormatted(false)->setOriginComments(false)->setComments(false)->setJson(true),
+        ConfigRenderOptions::defaults()->setFormatted(false)->setOriginComments(false)->setComments(true)->setJson(false),
+        ConfigRenderOptions::defaults()->setFormatted(false)->setOriginComments(false)->setComments(true)->setJson(true),
+        ConfigRenderOptions::defaults()->setFormatted(false)->setOriginComments(true)->setComments(false)->setJson(false),
+        ConfigRenderOptions::defaults()->setFormatted(false)->setOriginComments(true)->setComments(false)->setJson(true),
+        ConfigRenderOptions::defaults()->setFormatted(false)->setOriginComments(true)->setComments(true)->setJson(false),
+        ConfigRenderOptions::defaults()->setFormatted(false)->setOriginComments(true)->setComments(true)->setJson(true),
+        ConfigRenderOptions::defaults()->setFormatted(true)->setOriginComments(false)->setComments(false)->setJson(false),
+        ConfigRenderOptions::defaults()->setFormatted(true)->setOriginComments(false)->setComments(false)->setJson(true),
+        ConfigRenderOptions::defaults()->setFormatted(true)->setOriginComments(false)->setComments(true)->setJson(false),
+        ConfigRenderOptions::defaults()->setFormatted(true)->setOriginComments(false)->setComments(true)->setJson(true),
+        ConfigRenderOptions::defaults()->setFormatted(true)->setOriginComments(true)->setComments(false)->setJson(false),
+        ConfigRenderOptions::defaults()->setFormatted(true)->setOriginComments(true)->setComments(false)->setJson(true),
+        ConfigRenderOptions::defaults()->setFormatted(true)->setOriginComments(true)->setComments(true)->setJson(false),
+        ConfigRenderOptions::defaults()->setFormatted(true)->setOriginComments(true)->setComments(true)->setJson(true)
     };
 
     for (uint32_t i = 1; i <= 10; ++i) {
@@ -836,11 +844,13 @@ TEST_F(ConfigTest, renderRoundTrip) {
             auto unresolvedRender = conf->root()->render(renderOptions);
             auto resolved = conf->resolve();
             auto resolvedRender = resolved->root()->render(renderOptions);
+            auto unresolvedParsed = Config::parseString(unresolvedRender, ConfigParseOptions::defaults());
+            auto resolvedParsed = Config::parseString(resolvedRender, ConfigParseOptions::defaults());
 
-            checkEquals(std::dynamic_pointer_cast<ConfigBase>(conf->root()), std::dynamic_pointer_cast<ConfigBase>(Config::parseString(unresolvedRender, ConfigParseOptions::defaults())->root()));
-            checkEquals(std::dynamic_pointer_cast<ConfigBase>(resolved->root()), std::dynamic_pointer_cast<ConfigBase>(Config::parseString(resolvedRender, ConfigParseOptions::defaults())->root()));
+            checkEquals(std::dynamic_pointer_cast<ConfigBase>(conf->root()), std::dynamic_pointer_cast<ConfigBase>(unresolvedParsed->root()));
+            checkEquals(std::dynamic_pointer_cast<ConfigBase>(resolved->root()), std::dynamic_pointer_cast<ConfigBase>(resolvedParsed->root()));
 
-            if (!(renderOptions->getComments() || renderOptions->getOriginComments())) {
+            if (renderOptions->getJson() && !(renderOptions->getComments() || renderOptions->getOriginComments())) {
                 // should get valid JSON if we don't have comments and are resolved
                 Config::parseString(resolvedRender, ConfigParseOptions::defaults()->setSyntax(ConfigSyntax::JSON));
             }

@@ -363,10 +363,18 @@ void SimpleConfigObject::render(std::string& s, uint32_t indent_, const ConfigRe
         s += "{}";
     }
     else {
-        s += "{";
+        bool outerBraces = indent_ > 0 || options->getJson();
+
+        if (outerBraces) {
+            s += "{";
+        }
+
         if (options->getFormatted()) {
             s += "\n";
         }
+
+        uint32_t separatorCount = 0;
+
         for (auto& kv : value) {
             if (options->getOriginComments()) {
                 indent(s, indent_ + 1, options);
@@ -384,19 +392,32 @@ void SimpleConfigObject::render(std::string& s, uint32_t indent_, const ConfigRe
             }
             indent(s, indent_ + 1, options);
             std::dynamic_pointer_cast<AbstractConfigValue>(kv.second)->render(s, indent_ + 1, kv.first, options);
-            s += ",";
+
             if (options->getFormatted()) {
+                if (options->getJson()) {
+                    s += ",";
+                    separatorCount = 2;
+                }
+                else {
+                    separatorCount = 1;
+                }
                 s += "\n";
             }
+            else {
+                s += ",";
+                separatorCount = 1;
+            }
         }
-        // chop comma or newline
-        s.resize(s.length() - 1);
+        // chop last commas/newlines
+        s.resize(s.length() - separatorCount);
         if (options->getFormatted()) {
-            s.resize(s.length() - 1); // also chop comma
             s += "\n"; // put a newline back
             indent(s, indent_, options);
         }
-        s += "}";
+
+        if (outerBraces) {
+            s += "}";
+        }
     }
 }
 

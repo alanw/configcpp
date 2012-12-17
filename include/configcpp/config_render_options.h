@@ -26,7 +26,7 @@ class ConfigRenderOptions : public ConfigBase {
 public:
     CONFIG_CLASS(ConfigRenderOptions);
 
-    ConfigRenderOptions(bool originComments, bool comments, bool formatted);
+    ConfigRenderOptions(bool originComments, bool comments, bool formatted, bool json);
 
     /// Returns the default render options which are verbose (commented and
     /// formatted). See {@link ConfigRenderOptions#concise} for stripped-down
@@ -92,10 +92,30 @@ public:
     /// @return true if comments should be rendered
     bool getFormatted();
 
+    /// Returns options with JSON toggled. JSON means that HOCON extensions
+    /// (omitting commas, quotes for example) won't be used. However, whether to
+    /// use comments is controlled by the separate {@link #setComments(boolean)}
+    /// and {@link #setOriginComments(boolean)} options. So if you enable
+    /// comments you will get invalid JSON despite setting this to true.
+    ///
+    /// @param value
+    ///            true to include non-JSON extensions in the render
+    /// @return options with requested setting for JSON
+    ConfigRenderOptionsPtr setJson(bool value);
+
+    /// Returns whether the options enable JSON. This method is mostly used by
+    /// the config lib internally, not by applications.
+    ///
+    /// @return true if only JSON should be rendered
+    bool getJson();
+
+    virtual std::string toString() override;
+
 private:
     bool originComments;
     bool comments;
     bool formatted;
+    bool json;
 };
 
 }

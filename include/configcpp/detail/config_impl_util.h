@@ -18,6 +18,8 @@ public:
     /// may change.
     static std::string renderJsonString(const std::string& s);
 
+    static std::string renderStringUnquotedIfPossible(const std::string& s);
+
     /// This is public ONLY for use by the "config" package, DO NOT USE this ABI
     /// may change. You can use the version in ConfigUtil instead.
     static std::string joinPath(const VectorString& elements = VectorString());

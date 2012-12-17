@@ -54,6 +54,33 @@ std::string ConfigImplUtil::renderJsonString(const std::string& s) {
     return stream.str();
 }
 
+std::string ConfigImplUtil::renderStringUnquotedIfPossible(const std::string& s) {
+    // this can quote unnecessarily as long as it never fails to quote when
+    // necessary
+    if (s.empty()) {
+        return renderJsonString(s);
+    }
+
+    if (!std::isdigit(s[0])) {
+        return renderJsonString(s);
+    }
+
+    if (boost::starts_with(s, "include") || boost::ends_with(s, "true") ||
+        boost::ends_with(s, "false") || boost::ends_with(s, "null") ||
+        boost::contains(s, "//")) {
+        return renderJsonString(s);
+    }
+
+    // only unquote if it's pure alphanumeric
+    for (auto& c : s) {
+        if (std::isalpha(c) || std::isdigit(c)) {
+            return renderJsonString(s);
+        }
+    }
+
+    return s;
+}
+
 std::string ConfigImplUtil::joinPath(const VectorString& elements) {
     return Path::make_instance(elements)->render();
 }

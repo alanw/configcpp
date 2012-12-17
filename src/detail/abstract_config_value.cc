@@ -222,12 +222,34 @@ void AbstractConfigValue::indent(std::string& s, uint32_t indent, const ConfigRe
 
 void AbstractConfigValue::render(std::string& s, uint32_t indent, const boost::optional<std::string>& atKey, const ConfigRenderOptionsPtr& options) {
     if (atKey) {
-        s += ConfigImplUtil::renderJsonString(*atKey);
-        if (options->getFormatted()) {
-            s += " : ";
+        std::string renderedKey;
+        if (options->getJson()) {
+            renderedKey = ConfigImplUtil::renderJsonString(*atKey);
         }
         else {
-            s += ":";
+            renderedKey = ConfigImplUtil::renderStringUnquotedIfPossible(*atKey);
+        }
+
+        s += renderedKey;
+
+        if (options->getJson()) {
+            if (options->getFormatted()) {
+                s += " : ";
+            }
+            else {
+                s += ":";
+            }
+        }
+        else {
+            // in non-JSON we can omit the colon or equals before an object
+            if (instanceof<ConfigObject>(shared_from_this())) {
+                if (options->getFormatted()) {
+                    s += " ";
+                }
+            }
+            else {
+                s += "=";
+            }
         }
     }
     render(s, indent, options);
