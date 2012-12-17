@@ -1,8 +1,8 @@
 cmake_minimum_required(VERSION 2.6)
 
 project (configcpp)
-set(config_VERSION_MAJOR 0)
-set(config_VERSION_MINOR 6)
+set(config_VERSION_MAJOR 1)
+set(config_VERSION_MINOR 0)
 set(config_VERSION_PATCH 0)
 set(config_VERSION "${config_VERSION_MAJOR}.${config_VERSION_MINOR}.${config_VERSION_PATCH}")
 
