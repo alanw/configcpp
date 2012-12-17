@@ -198,8 +198,8 @@ VectorParseTest TestFixture::invalidJsonInvalidConf() {
 VectorParseTest TestFixture::validJson() {
     static VectorParseTest _validJson = {
         {"[]", false},
-        {"{ \"foo\" : \"bar\" }}", false},
-        {"\"foo\",\"bar\"", false},
+        {"{ \"foo\" : \"bar\" }", false},
+        {"[\"foo\", \"bar\"]", false},
         {"{ \"foo\" : 42 }", false},
         {"{ \"foo\"\n : 42 }", false}, // newline after key
         {"{ \"foo\" : \n 42 }", false}, // newline after colon
@@ -312,7 +312,8 @@ VectorParseTest TestFixture::invalidJson() {
     static VectorParseTest _invalidJson;
     if (_invalidJson.empty()) {
         _invalidJson = validConfInvalidJson();
-        _invalidJson.insert(_invalidJson.end(), invalidJsonInvalidConf().begin(), invalidJsonInvalidConf().end());
+        auto _invalidJsonInvalidConf = invalidJsonInvalidConf();
+        _invalidJson.insert(_invalidJson.end(), _invalidJsonInvalidConf.begin(), _invalidJsonInvalidConf.end());
     }
     return _invalidJson;
 }
@@ -327,7 +328,8 @@ VectorParseTest TestFixture::validConf() {
     static VectorParseTest _validConf;
     if (_validConf.empty()) {
         _validConf = validConfInvalidJson();
-        _validConf.insert(_validConf.end(), validJson().begin(), validJson().end());
+        auto _validJson = validJson();
+        _validConf.insert(_validConf.end(), _validJson.begin(), _validJson.end());
     }
     return _validConf;
 }
